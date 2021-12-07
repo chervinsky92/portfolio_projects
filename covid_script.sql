@@ -125,7 +125,8 @@ ORDER BY date;
 
 -- Introducing vaccinations table
 SELECT *
-FROM dbo.covid_vaccinations;
+FROM dbo.covid_vaccinations
+WHERE location = 'United States';
 
 -- Join both tables
 SELECT *
@@ -202,9 +203,9 @@ WHERE date = (SELECT MAX(date) FROM #CurrentPopulationVaccinated)
 ORDER BY vaccinations_per_person DESC;
 
 -- Views: will store data for future visualizations
-
+DROP VIEW IF EXISTS PopulationVaccianted;
 GO 
-
+-- View 1: Vaccinations per population over time
 CREATE VIEW PopulationVaccinated AS 
 SELECT d.continent,
 	d.location, 
@@ -223,3 +224,84 @@ GO
 
 SELECT *
 FROM PopulationVaccinated;
+
+DROP VIEW IF EXISTS AgeVsDeathRate;
+GO
+-- View 2: Impact of age on covid death percentage
+CREATE VIEW AgeVsDeathRate AS 
+SELECT d.location,
+	d.population,
+	d.total_deaths,
+	(d.total_deaths / d.population) * 100 AS population_dead_from_covid_percentage,
+	v.median_age,
+	v.aged_65_older,
+	v.aged_70_older
+FROM dbo.covid_deaths d
+JOIN dbo.covid_vaccinations v
+	ON d.location = v.location
+		AND d.date = v.date
+WHERE d.continent IS NOT NULL AND
+	d.population IS NOT NULL AND
+	d.date = (SELECT MAX(date) FROM dbo.covid_deaths);
+
+GO
+
+SELECT *
+FROM AgeVsDeathRate
+ORDER BY population_dead_from_covid_percentage DESC;
+
+DROP VIEW IF EXISTS UnitedStatesCovid;
+GO
+-- View 3: United States Covid Infections, Deaths, and Vaccinations
+CREATE VIEW UnitedStatesCovid AS
+SELECT d.location,
+    d.date,
+	d.population,
+    d.total_cases,
+    d.total_deaths,
+    (d.total_deaths / d.total_cases) * 100 AS death_percentage,
+	v.new_vaccinations,
+	v.people_vaccinated,
+	v.people_fully_vaccinated,
+	v.total_boosters,
+	(v.people_vaccinated / d.population) * 100 AS percent_vaccinated,
+	(v.people_fully_vaccinated / d.population) * 100 AS percent_fully_vaccinated
+FROM dbo.covid_deaths d
+JOIN dbo.covid_vaccinations v
+	ON d.location = v.location
+		AND d.date = v.date
+WHERE d.location LIKE '%States%'
+	AND d.population IS NOT NULL;
+
+GO
+
+SELECT *
+FROM UnitedStatesCovid;
+
+DROP VIEW IF EXISTS CountryCovidData;
+GO
+-- View 4: Covid Infections, Deaths, and Vaccinations for all countries
+CREATE VIEW CountryCovidData AS
+SELECT d.location,
+    d.date,
+	d.population,
+    d.total_cases,
+    d.total_deaths,
+    (d.total_deaths / d.total_cases) * 100 AS death_percentage,
+	v.new_vaccinations,
+	v.people_vaccinated,
+	v.people_fully_vaccinated,
+	v.total_boosters,
+	(v.people_vaccinated / d.population) * 100 AS percent_vaccinated,
+	(v.people_fully_vaccinated / d.population) * 100 AS percent_fully_vaccinated
+FROM dbo.covid_deaths d
+JOIN dbo.covid_vaccinations v
+	ON d.location = v.location
+		AND d.date = v.date
+WHERE d.population IS NOT NULL
+	AND d.continent IS NOT NULL;
+
+GO
+
+SELECT *
+FROM CountryCovidData;
