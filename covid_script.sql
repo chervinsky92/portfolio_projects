@@ -1,7 +1,6 @@
 -- Data is from 1/1/2020 to 12/2/2021
-
 SELECT * 
-FROM Covid.dbo.covid_deaths 
+FROM Portfolio.dbo.covid_deaths 
 ORDER BY location, date;
 
 -- TABLEAU TABLE 1 (Global Numbers)
@@ -9,7 +8,7 @@ ORDER BY location, date;
 SELECT SUM(new_cases) AS total_cases, 
 	SUM(CAST(new_deaths AS BIGINT)) AS total_deaths,
 	(SUM(CAST(new_deaths AS BIGINT)) / SUM(new_cases)) * 100 AS death_rate_percentage
-FROM Covid.dbo.covid_deaths
+FROM Portfolio.dbo.covid_deaths
 WHERE continent IS NOT NULL;
 
 -- World death rate from covid
@@ -20,7 +19,7 @@ SELECT date,
 	SUM(total_cases) AS world_total_cases,
 	SUM(CAST(total_deaths AS BIGINT)) AS world_total_deaths,
 	SUM(CAST(total_deaths AS INT)) / SUM(total_cases) * 100 AS total_death_percentage
-FROM Covid.dbo.covid_deaths
+FROM Portfolio.dbo.covid_deaths
 WHERE continent IS NOT NULL
 GROUP BY date
 ORDER BY date;
@@ -32,7 +31,7 @@ SELECT location,
 	total_cases, 
 	new_deaths, 
 	total_deaths
-FROM Covid.dbo.covid_deaths
+FROM Portfolio.dbo.covid_deaths
 WHERE continent IS NOT NULL
 	AND population IS NOT NULL
 ORDER BY location, date;
@@ -42,8 +41,8 @@ SELECT location,
     total_cases,
     total_deaths,
     (total_deaths / total_cases) * 100 AS death_rate_percentage
-FROM Covid.dbo.covid_deaths
-WHERE date = (SELECT MAX(date) FROM Covid.dbo.covid_deaths)
+FROM Portfolio.dbo.covid_deaths
+WHERE date = (SELECT MAX(date) FROM Portfolio.dbo.covid_deaths)
 	AND total_cases >= 100
 	AND continent IS NOT NULL
 ORDER BY death_rate_percentage DESC;
@@ -54,7 +53,7 @@ SELECT location,
 	total_cases,
 	total_deaths,
 	(total_deaths / total_cases) * 100 AS death_percentage
-FROM Covid.dbo.covid_deaths
+FROM Portfolio.dbo.covid_deaths
 WHERE continent IS NOT NULL
 	AND population IS NOT NULL
 ORDER BY location, date;
@@ -65,7 +64,7 @@ SELECT location,
     total_cases,
     total_deaths,
     (total_deaths / total_cases) * 100 AS death_percentage
-FROM Covid.dbo.covid_deaths
+FROM Portfolio.dbo.covid_deaths
 WHERE location = 'United States'
 	AND population IS NOT NULL
 ORDER BY location, date;
@@ -78,8 +77,8 @@ SELECT location,
     total_deaths,
     (total_cases / population) * 100 AS population_infected_percentage,
     (total_deaths / population) * 100 AS population_dead_from_covid_percentage
-FROM Covid.dbo.covid_deaths
-WHERE date = (SELECT MAX(date) FROM Covid.dbo.covid_deaths)
+FROM Portfolio.dbo.covid_deaths
+WHERE date = (SELECT MAX(date) FROM Portfolio.dbo.covid_deaths)
 	AND total_cases IS NOT NULL
 	AND continent IS NOT NULL
 ORDER BY location;
@@ -91,7 +90,7 @@ SELECT location,
 	population,
 	total_cases,
 	(total_cases / population) * 100 AS percent_of_population_infected
-FROM Covid.dbo.covid_deaths
+FROM Portfolio.dbo.covid_deaths
 WHERE continent IS NOT NULL
 	AND population IS NOT NULL
 ORDER BY percent_of_population_infected DESC;
@@ -101,8 +100,8 @@ SELECT location,
 	total_cases,
 	population,
 	(total_cases / population) * 100 AS population_infected_percentage
-FROM Covid.dbo.covid_deaths
-WHERE date = (SELECT MAX(date) FROM Covid.dbo.covid_deaths)
+FROM Portfolio.dbo.covid_deaths
+WHERE date = (SELECT MAX(date) FROM Portfolio.dbo.covid_deaths)
 	AND continent IS NOT NULL
 	AND population IS NOT NULL
 ORDER BY population_infected_percentage DESC;
@@ -112,16 +111,16 @@ SELECT location,
 	total_deaths,
 	population,
 	(total_deaths / population) * 100 AS population_dead_from_covid_percentage
-FROM Covid.dbo.covid_deaths
-WHERE date = (SELECT MAX(date) FROM Covid.dbo.covid_deaths)
+FROM Portfolio.dbo.covid_deaths
+WHERE date = (SELECT MAX(date) FROM Portfolio.dbo.covid_deaths)
 	AND continent IS NOT NULL
 ORDER BY population_dead_from_covid_percentage DESC;
 
 -- Countries with most recorded covid deaths
 SELECT location, 
 	CAST(total_deaths AS INT) AS covid_deaths
-FROM Covid.dbo.covid_deaths
-WHERE date = (SELECT MAX(date) FROM Covid.dbo.covid_deaths)
+FROM Portfolio.dbo.covid_deaths
+WHERE date = (SELECT MAX(date) FROM Portfolio.dbo.covid_deaths)
 	AND continent IS NOT NULL
 	AND population IS NOT NULL
 ORDER BY covid_deaths DESC;
@@ -131,7 +130,7 @@ ORDER BY covid_deaths DESC;
 Select location, 
 	SUM(new_cases) AS total_infections,
 	SUM(CAST(new_deaths AS BIGINT)) AS total_deaths
-FROM Covid.dbo.covid_deaths
+FROM Portfolio.dbo.covid_deaths
 WHERE continent IS NULL 
 AND location IN ('Europe', 'Asia', 'North America', 'South America', 'Africa', 'Oceania')
 Group BY location
@@ -141,7 +140,7 @@ ORDER BY total_deaths DESC;
 SELECT location AS income_level,
 	SUM(new_cases) AS infections,
 	SUM(CAST(new_deaths AS BIGINT)) AS deaths
-FROM Covid.dbo.covid_deaths
+FROM Portfolio.dbo.covid_deaths
 WHERE continent IS NULL
 	AND location IN ('High income', 'Upper middle income', 'Lower middle income', 'Low income')
 GROUP BY location
@@ -150,13 +149,13 @@ ORDER BY deaths DESC;
 -- Introducing vaccinations table
 -- United States vaccination statistics
 SELECT *
-FROM Covid.dbo.covid_vaccinations
+FROM Portfolio.dbo.covid_vaccinations
 WHERE location = 'United States';
 
 -- Join both tables
 SELECT *
-FROM Covid.dbo.covid_deaths d
-JOIN Covid.dbo.covid_vaccinations v
+FROM Portfolio.dbo.covid_deaths d
+JOIN Portfolio.dbo.covid_vaccinations v
 	ON d.location = v.location
 		AND d.date = v.date
 WHERE population IS NOT NULL;
@@ -168,8 +167,8 @@ SELECT d.location,
 	d.population, 
 	v.new_vaccinations,
 	SUM(CONVERT(BIGINT, v.new_vaccinations)) OVER (PARTITION BY d.location ORDER BY d.location, d.date) AS total_vaccinations
-FROM Covid.dbo.covid_deaths d
-JOIN Covid.dbo.covid_vaccinations v
+FROM Portfolio.dbo.covid_deaths d
+JOIN Portfolio.dbo.covid_vaccinations v
 	ON d.location = v.location
 		AND d.date = v.date
 WHERE d.continent IS NOT NULL
@@ -184,8 +183,8 @@ SELECT d.location,
 	d.population, 
 	v.new_vaccinations,
 	SUM(CONVERT(BIGINT, v.new_vaccinations)) OVER (PARTITION BY d.location ORDER BY d.location, d.date) AS total_vaccinations
-FROM Covid.dbo.covid_deaths d
-JOIN Covid.dbo.covid_vaccinations v
+FROM Portfolio.dbo.covid_deaths d
+JOIN Portfolio.dbo.covid_vaccinations v
 	ON d.location = v.location
 		AND d.date = v.date
 WHERE d.continent IS NOT NULL
@@ -212,8 +211,8 @@ SELECT d.location,
 	d.population, 
 	v.new_vaccinations,
 	SUM(CONVERT(BIGINT, v.new_vaccinations)) OVER (PARTITION BY d.location ORDER BY d.location, d.date) AS total_vaccinations
-FROM Covid.dbo.covid_deaths d
-JOIN Covid.dbo.covid_vaccinations v
+FROM Portfolio.dbo.covid_deaths d
+JOIN Portfolio.dbo.covid_vaccinations v
 	ON d.location = v.location
 		AND d.date = v.date
 WHERE d.continent IS NOT NULL
@@ -239,8 +238,8 @@ SELECT d.continent,
 	d.population, 
 	v.new_vaccinations,
 	SUM(CONVERT(BIGINT, v.new_vaccinations)) OVER (PARTITION BY d.location ORDER BY d.location, d.date) AS total_vaccinations
-FROM Covid.dbo.covid_deaths d
-JOIN Covid.dbo.covid_vaccinations v
+FROM Portfolio.dbo.covid_deaths d
+JOIN Portfolio.dbo.covid_vaccinations v
 	ON d.location = v.location
 		AND d.date = v.date
 WHERE d.continent IS NOT NULL
@@ -262,13 +261,13 @@ SELECT d.location,
 	v.median_age,
 	v.aged_65_older,
 	v.aged_70_older
-FROM Covid.dbo.covid_deaths d
-JOIN Covid.dbo.covid_vaccinations v
+FROM Portfolio.dbo.covid_deaths d
+JOIN Portfolio.dbo.covid_vaccinations v
 	ON d.location = v.location
 		AND d.date = v.date
 WHERE d.continent IS NOT NULL AND
 	d.population IS NOT NULL AND
-	d.date = (SELECT MAX(date) FROM Covid.dbo.covid_deaths);
+	d.date = (SELECT MAX(date) FROM Portfolio.dbo.covid_deaths);
 
 GO
 
@@ -292,8 +291,8 @@ SELECT d.location,
 	v.total_boosters,
 	(v.people_vaccinated / d.population) * 100 AS percent_vaccinated,
 	(v.people_fully_vaccinated / d.population) * 100 AS percent_fully_vaccinated
-FROM Covid.dbo.covid_deaths d
-JOIN Covid.dbo.covid_vaccinations v
+FROM Portfolio.dbo.covid_deaths d
+JOIN Portfolio.dbo.covid_vaccinations v
 	ON d.location = v.location
 		AND d.date = v.date
 WHERE d.location LIKE '%States%'
@@ -320,8 +319,8 @@ SELECT d.location,
 	v.total_boosters,
 	(v.people_vaccinated / d.population) * 100 AS percent_vaccinated,
 	(v.people_fully_vaccinated / d.population) * 100 AS percent_fully_vaccinated
-FROM Covid.dbo.covid_deaths d
-JOIN Covid.dbo.covid_vaccinations v
+FROM Portfolio.dbo.covid_deaths d
+JOIN Portfolio.dbo.covid_vaccinations v
 	ON d.location = v.location
 		AND d.date = v.date
 WHERE d.population IS NOT NULL
