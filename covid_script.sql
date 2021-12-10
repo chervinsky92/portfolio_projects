@@ -4,7 +4,7 @@ SELECT *
 FROM Covid.dbo.covid_deaths 
 ORDER BY location, date;
 
--- TABLEAU TABLE 1
+-- TABLEAU TABLE 1 (Global Numbers)
 -- World cases, deaths, and death percentage 
 SELECT SUM(new_cases) AS total_cases, 
 	SUM(CAST(new_deaths AS BIGINT)) AS total_deaths,
@@ -70,7 +70,7 @@ WHERE location = 'United States'
 	AND population IS NOT NULL
 ORDER BY location, date;
 
--- TABLEAU TABLE 3
+-- TABLEAU TABLE 3 (Percent of Population Infected Per Country)
 -- % of population infected and dead from covid for each country
 SELECT location,
 	population,
@@ -84,7 +84,7 @@ WHERE date = (SELECT MAX(date) FROM Covid.dbo.covid_deaths)
 	AND continent IS NOT NULL
 ORDER BY location;
 
--- TABLEAU TABLE 4
+-- TABLEAU TABLE 4 (Percent of Population Infected Over Time)
 -- % of population that had covid in each country (daily count)
 SELECT location,
 	date,
@@ -126,7 +126,7 @@ WHERE date = (SELECT MAX(date) FROM Covid.dbo.covid_deaths)
 	AND population IS NOT NULL
 ORDER BY covid_deaths DESC;
 
--- TABLEAU TABLE 2
+-- TABLEAU TABLE 2 (Covid Deaths by Continent)
 -- Covid cases/deaths by continent
 Select location, 
 	SUM(new_cases) AS total_infections,
