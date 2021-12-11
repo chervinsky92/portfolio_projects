@@ -163,12 +163,12 @@ FROM Portfolio.dbo.nashville_housing;
 -- row_number > 1 represents a duplicate
 SELECT *,
 	ROW_NUMBER() OVER (
-					PARTITION BY ParcelID,
-								 PropertyAddress,
-								 SalePrice,
-								 SaleDate,
-								 LegalReference
-					ORDER BY UniqueID) AS row_number
+		PARTITION BY ParcelID,
+			     PropertyAddress,
+			     SalePrice,
+			     SaleDate,
+			     LegalReference
+		ORDER BY UniqueID) AS row_number
 FROM Portfolio.dbo.nashville_housing
 ORDER BY ParcelID;
 
@@ -176,12 +176,12 @@ ORDER BY ParcelID;
 WITH RowNum AS (
 SELECT *,
 	ROW_NUMBER() OVER (
-					PARTITION BY ParcelID,
-								 PropertyAddress,
-								 SalePrice,
-								 SaleDate,
-								 LegalReference
-					ORDER BY UniqueID) AS row_number
+		PARTITION BY ParcelID,
+			     PropertyAddress,
+			     SalePrice,
+			     SaleDate,
+			     LegalReference
+		ORDER BY UniqueID) AS row_number
 FROM Portfolio.dbo.nashville_housing
 )
 SELECT *
@@ -192,12 +192,12 @@ WHERE row_number > 1;
 WITH RowNum AS (
 SELECT *,
 	ROW_NUMBER() OVER (
-					PARTITION BY ParcelID,
-								 PropertyAddress,
-								 SalePrice,
-								 SaleDate,
-								 LegalReference
-					ORDER BY UniqueID) AS row_number
+	 	PARTITION BY ParcelID,
+			     PropertyAddress,
+			     SalePrice,
+			     SaleDate,
+			     LegalReference
+		ORDER BY UniqueID) AS row_number
 FROM Portfolio.dbo.nashville_housing
 )
 DELETE
@@ -208,12 +208,12 @@ WHERE row_number > 1;
 WITH RowNum AS (
 SELECT *,
 	ROW_NUMBER() OVER (
-					PARTITION BY ParcelID,
-								 PropertyAddress,
-								 SalePrice,
-								 SaleDate,
-								 LegalReference
-					ORDER BY UniqueID) AS row_number
+ 		PARTITION BY ParcelID,
+			     PropertyAddress,
+			     SalePrice,
+			     SaleDate,
+			     LegalReference
+	 	ORDER BY UniqueID) AS row_number
 FROM Portfolio.dbo.nashville_housing
 )
 SELECT *
